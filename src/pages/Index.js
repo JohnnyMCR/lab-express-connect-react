@@ -1,9 +1,10 @@
+import Logs from "../components/Logs.js"
 
-
-export default function Edit() {
+export default function Index() {
     return (
-        <div className="New Edit">
-            <h2>Edit</h2>
-        </div>
-    )
-}
+      <div className="page-index">
+        <h1>Index</h1>
+        <Logs />
+      </div>
+    );
+  }

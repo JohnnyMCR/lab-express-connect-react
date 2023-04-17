@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import axios from "axios";
 const API = process.env.REACT_APP_API_URL;
 
-export default function LogNewForm() {
+export default function LogEditForm() {
     const [log, setLog] = useState({
         captainName: "",
         title: "",
@@ -11,7 +11,15 @@ export default function LogNewForm() {
         mistakesWereMadeToday: false,
         daysSinceLastCrisis: 0
     });
+    const { index } = useParams();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        axios
+            .get(`${API}/logs/${index}`)
+            .then((response) => setLog(response.data))
+            .catch((error) => console.error("Error: GET", error))
+    }, [index]);
 
     function handleTextChange(event) {
         setLog({ ...log, [event.target.id]: event.target.value });
@@ -21,20 +29,23 @@ export default function LogNewForm() {
         setLog({ ...log, mistakesWereMadeToday: !log.mistakesWereMadeToday });
     };
 
-    function addLog() {
+    function updateLog() {
         axios
-            .post(`${API}/logs`, log)
-            .then(() => navigate(`/logs`))
-            .catch(error => console.error("Error: POST", error))
+            .put(`${API}/logs/${index}`, log)
+            .then((response) => {
+                setLog(response.data)
+                navigate(`/logs/${index}`)
+            })
+            .catch((error) => console.warn("Error: PUT", error))
     }
 
     function handleSubmit(event) {
         event.preventDefault();
-        addLog();
+        updateLog();
     }
 
     return (
-        <div className="form-new">
+        <div className="form-edit">
             <form onSubmit={handleSubmit}>
                 <label htmlFor="captainName">Captain's Name:</label>
                 <input
@@ -56,7 +67,6 @@ export default function LogNewForm() {
                 <textarea
                     id="post"
                     value={log.post}
-                    // rows="5" cols="30"
                     placeholder="What happened today?"
                     onChange={handleTextChange}
                 />
@@ -77,6 +87,10 @@ export default function LogNewForm() {
                 <br />
                 <input type="submit" />
             </form>
+
+            <Link to={`/logs/${index}`}>
+                <button>Back</button>
+            </Link>
         </div>
     )
 }

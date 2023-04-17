@@ -1,6 +1,6 @@
+import { Link } from "react-router-dom";
 
-
-export default function Log({ log, index}) {
+export default function Log({ log, index }) {
     return (
         <tr>
             <th>{log.captainName}</th>
